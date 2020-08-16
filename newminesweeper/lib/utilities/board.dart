@@ -1,11 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:newminesweeper/utilities/block.dart';
 import 'dart:math';
 import 'functionality.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:audioplayers/audio_cache.dart';
 
 class Board extends StatefulWidget {
   static Function boardCallBack;
+  static Function mineFoundCallBack;
   static final String id='board';
   @override
   _BoardState createState() => _BoardState();
@@ -17,20 +19,51 @@ class _BoardState extends State<Board> {
   int mines=9;
   int minesLeft;
   List<int> minesCordinate=List();
-  
   List<List<Block>> gboard; //list of widget is not a widget
+  AudioCache player=AudioCache();
+  void submitOnPress()
+  {
+    bool win=false;
+    for(int i in minesCordinate){
+      int r=i~/rows;
+      int c=i%columns;
+      if(gboard[r][c].flagged==true)
+      {
+        win=true;
+      }
+      else{
+        win=false;
+        break;
+      }
+    }
+    setState(() {
+          Alert(context: context, title: win==true?'You Win!':'Run!',
+          image: win==true?Image.asset('images/win.png',height: 100):Image.asset('images/boyfriend.png',height: 100),
+      closeFunction: (){Navigator.pop(context);
+    }).show();
+    });
 
-  void BoardsetState(){
+  }
+  void boardSetState(){
     setState(() {
       minesLeft=mines-Auto.blocksFlagged;
     });
   }
-
+  void mineFound()
+  {
+    setState(() {
+      Alert(context: context, title:'Run!',
+      image: Image.asset('images/boyfriend.png',height: 100,),
+      closeFunction: (){Navigator.pop(context);
+      }).show();
+    });
+  }
   @override
   void initState() {
+    player.play('intro.mp3');
     minesLeft=mines;
-    Board.boardCallBack=BoardsetState;
-    // TODO: implement initState
+    Board.boardCallBack=boardSetState;
+    Board.mineFoundCallBack=mineFound;
     gboard=List.generate(rows, (row) => List.generate(columns,(column) => Block()),growable: false);
     logic();
     Auto.gboard=gboard;
@@ -149,7 +182,7 @@ class _BoardState extends State<Board> {
             color: Colors.amber,
             borderRadius: BorderRadius.circular(30.0),
             child: MaterialButton(
-              onPressed: (){},
+              onPressed: (){submitOnPress();},
               minWidth: 200.0,
               height: 42.0,
               child: Text('Submit'),

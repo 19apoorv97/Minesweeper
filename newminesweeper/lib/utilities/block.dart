@@ -18,7 +18,6 @@ class _BlockState extends State<Block> {
 
   @override
   void initState() {
-    // TODO: implement initState
     widget.funCallBack=blockSetState;
     super.initState();
   }
@@ -55,9 +54,15 @@ class _BlockState extends State<Block> {
           Auto.y=widget.yCor;
           Auto.clean();
         }
+        
         setState(() {
           widget.revealed=true;
         });
+
+        if(widget.havingMine)
+        {
+          Board.mineFoundCallBack();
+        }
         }
       },
       onLongPress: (){
