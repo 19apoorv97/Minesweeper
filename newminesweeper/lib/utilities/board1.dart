@@ -1,36 +1,17 @@
-
-import 'package:flutter/material.dart';
-import 'package:newminesweeper/utilities/block.dart';
 import 'dart:math';
+import 'package:flutter/material.dart';
+import 'block.dart';
 import 'functionality.dart';
 
-class Board extends StatefulWidget {
-  static Function boardCallBack;
-  static final String id='board';
-  @override
-  _BoardState createState() => _BoardState();
-}
-
-class _BoardState extends State<Board> {
+class Board extends StatelessWidget {
   int rows=10;
   int columns=8;
-  int mines=9;
-  int minesLeft;
+  static int mines=9;
   List<int> minesCordinate=List();
-  
-  List<List<Block>> gboard; //list of widget is not a widget
+  List<List<Block>> gboard;
 
-  void BoardsetState(){
-    setState(() {
-      minesLeft=mines-Auto.blocksFlagged;
-    });
-  }
-
-  @override
-  void initState() {
-    minesLeft=mines;
-    Board.boardCallBack=BoardsetState;
-    // TODO: implement initState
+  Board()
+  {
     gboard=List.generate(rows, (row) => List.generate(columns,(column) => Block()),growable: false);
     logic();
     Auto.gboard=gboard;
@@ -38,9 +19,6 @@ class _BoardState extends State<Board> {
     Auto.columns=columns;
     Auto.actualMines=mines;
     Auto.blocksFlagged=0;
-    
-    //Timer(Duration(minutes: 3), callback);
-    super.initState();
   }
 
   void logic()
@@ -91,6 +69,7 @@ class _BoardState extends State<Board> {
       }
     }
   }
+  
   Widget buildBoard() //as Column handles 1d list buildBoard handles 2d list
   {
     List<Row> boardRow=[];
@@ -117,46 +96,9 @@ class _BoardState extends State<Board> {
     );
 
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.teal,
-        title: Text('MineSweeper'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        //crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-            Image.asset('images/flag.png',height: 60,width: 60,),
-            SizedBox(width: 5,),
-            Text(minesLeft.toString(),style: TextStyle(color: Colors.white,fontSize: 40)),
-            SizedBox(width: 10,),
-            Image.asset('images/clock.png',height: 60,width: 60,),
-            SizedBox(width: 5,),
-            Text('3:00',style: TextStyle(color: Colors.white,fontSize: 40)),
-            
-          ],),
-          SizedBox(height: 20,),
-          Center(child: Wrap(children:[buildBoard()],)),
-          SizedBox(height: 20,),
-          Material(
-            elevation: 5.0,
-            color: Colors.amber,
-            borderRadius: BorderRadius.circular(30.0),
-            child: MaterialButton(
-              onPressed: (){},
-              minWidth: 200.0,
-              height: 42.0,
-              child: Text('Submit'),
-              ),
-            ),
-        ],
-      )
-    );
+    return buildBoard();
   }
 }
